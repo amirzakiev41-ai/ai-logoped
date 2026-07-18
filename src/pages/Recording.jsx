@@ -1,26 +1,45 @@
+import { useRecorder } from "../hooks/useRecorder";
 import { useEffect } from "react";
 
-function Recording({ onFinish }) {
+function Recording({
+  onFinish,
+  word,
+  recordings,
+  setRecordings
+}) {
+  useRecorder({
+  word,
+  recordings,
+  setRecordings,
+  onFinish,
+});
+  
 
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      onFinish();
-    }, 3000);
+   return (
+  <div className="page">
+    <div className="recording-container">
 
-    return () => clearTimeout(timer);
-  }, []);
-
-  return (
-    <div style={{ textAlign: "center", padding: "40px" }}>
-      <h1>🎤</h1>
+      <div className="mic-pulse">
+        🎤
+      </div>
 
       <h2>Запись идёт...</h2>
 
       <p>
         Произнеси слово громко и чётко
       </p>
+
+      <div className="wave">
+        <span></span>
+        <span></span>
+        <span></span>
+        <span></span>
+        <span></span>
+      </div>
+
     </div>
-  );
+  </div>
+);
 }
 
 export default Recording;

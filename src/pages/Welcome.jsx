@@ -1,18 +1,22 @@
+import Button from "../components/Button/Button";
+
 function Welcome({ onStart }) {
   return (
-    <div style={{ textAlign: "center", padding: "40px" }}>
-      <h1>🤖</h1>
+    <div className="page">
+      <div className="avatar">
+        🤖
+      </div>
 
-      <h2>Привет!</h2>
+      <h1>AI Логопед</h1>
 
-      <p>
-        Я помогу тебе тренировать речь
-        и говорить красиво.
+      <p className="subtitle">
+        Привет! Я помогу тебе тренировать речь
+        и научиться красиво произносить звуки.
       </p>
 
-      <button onClick={onStart}>
-        Начать 🚀
-      </button>
+      <Button onClick={onStart}>
+        Начать тест 🚀
+      </Button>
     </div>
   );
 }
