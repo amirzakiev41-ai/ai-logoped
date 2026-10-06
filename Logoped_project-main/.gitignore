@@ -1,0 +1,16 @@
+﻿certs/
+venv/
+.venv/
+__pycache__/
+*.py[cod]
+.env
+.env.*
+.vscode/
+.idea/
+*.log
+
+# User/audio data
+records/
+
+# Local database
+data/LogopedData.db
