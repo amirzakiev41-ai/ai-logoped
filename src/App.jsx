@@ -46,12 +46,15 @@ function App() {
 
  if (screen === "recording") {
   return (
-   <Recording
+    <Recording
       word={words[wordIndex]}
       recordings={recordings}
       setRecordings={setRecordings}
-      onFinish={() => setScreen("analysis")}
-/>
+      onFinish={() => {
+        console.log("ПЕРЕХОД НА ANALYSIS");
+        setScreen("analysis");
+      }}
+    />
   );
 }
  if (screen === "analysis") {

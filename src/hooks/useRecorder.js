@@ -27,7 +27,6 @@ export function useRecorder({
             type: "audio/webm",
           });
 
-          // Сохраняем запись во frontend
           setRecordings((prev) => [
             ...prev,
             {
@@ -37,6 +36,9 @@ export function useRecorder({
           ]);
 
           stream.getTracks().forEach((track) => track.stop());
+
+          // Сразу переходим к анализу
+          onFinish();
 
           // Отправляем аудио на backend
           const formData = new FormData();
@@ -67,23 +69,20 @@ export function useRecorder({
             const result = await response.json();
 
             console.log("Ответ backend:", result);
-
-            onFinish(result);
           } catch (error) {
             console.error(
               "Ошибка отправки аудио:",
               error
             );
-
-            alert("Не удалось проверить произношение");
-            onFinish();
           }
         };
 
         mediaRecorder.start();
 
         setTimeout(() => {
-          mediaRecorder.stop();
+          if (mediaRecorder.state === "recording") {
+            mediaRecorder.stop();
+          }
         }, 3000);
 
       } catch (error) {
