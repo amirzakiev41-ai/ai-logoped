@@ -6,17 +6,9 @@ import lamp from "../assets/lamp.png";
 import Card from "../components/Card/Card";
 import ProgressBar from "../components/ProgressBar/ProgressBar";
 function WordTest({ word, onRecord, current, total }) {
-  const handleMicClick = async () => {
-    try {
-      await navigator.mediaDevices.getUserMedia({
-        audio: true,
-      });
-
-      onRecord();
-    } catch (error) {
-      alert("Не удалось получить доступ к микрофону");
-    }
-  };
+const handleMicClick = () => {
+  onRecord();
+};
 
   const wordImages = {
   РЫБА: fish,

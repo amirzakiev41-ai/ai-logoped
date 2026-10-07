@@ -22,24 +22,62 @@ export function useRecorder({
           chunks.push(event.data);
         };
 
-        mediaRecorder.onstop = () => {
+        mediaRecorder.onstop = async () => {
           const blob = new Blob(chunks, {
             type: "audio/webm",
           });
 
-          setRecordings([
-            ...recordings,
+          // Сохраняем запись во frontend
+          setRecordings((prev) => [
+            ...prev,
             {
               word,
               audio: blob,
             },
           ]);
 
-          stream.getTracks().forEach((track) =>
-            track.stop()
+          stream.getTracks().forEach((track) => track.stop());
+
+          // Отправляем аудио на backend
+          const formData = new FormData();
+
+          formData.append("user_id", "3");
+          formData.append("word_index", "0");
+          formData.append(
+            "audio",
+            blob,
+            "recording.webm"
           );
 
-          onFinish();
+          try {
+            const response = await fetch(
+              "http://127.0.0.1:8000/lesson/check",
+              {
+                method: "POST",
+                body: formData,
+              }
+            );
+
+            if (!response.ok) {
+              throw new Error(
+                `Backend error: ${response.status}`
+              );
+            }
+
+            const result = await response.json();
+
+            console.log("Ответ backend:", result);
+
+            onFinish(result);
+          } catch (error) {
+            console.error(
+              "Ошибка отправки аудио:",
+              error
+            );
+
+            alert("Не удалось проверить произношение");
+            onFinish();
+          }
         };
 
         mediaRecorder.start();
@@ -49,12 +87,11 @@ export function useRecorder({
         }, 3000);
 
       } catch (error) {
-        console.error(error);
-        alert("Ошибка записи");
+        console.error("ОШИБКА ЗАПИСИ:", error);
+        alert("Ошибка записи: " + error.message);
       }
     };
 
     startRecording();
-
   }, []);
 }
