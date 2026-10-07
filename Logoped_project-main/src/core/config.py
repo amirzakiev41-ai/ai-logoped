@@ -19,7 +19,7 @@ class Settings:
 
         BASE_DIR = Path(__file__).resolve().parents[2]
 
-        self.AUDIO_FILE_PATH: Path = BASE_DIR / "records" / "SIZOYT_fixed.wav"
+        self.AUDIO_FILE_PATH: Path = BASE_DIR / "records" / "WhatsApp Audio 2026-10-07 at 08.46.33.mp4"
         self.DATABASE_FILE_PATH: Path = BASE_DIR / "data" / "LogopedData.db"
         self.JSON_FILE_PATH: Path = BASE_DIR / "data" / "TempData.json"
         
