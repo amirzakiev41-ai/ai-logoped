@@ -48,12 +48,11 @@ function App() {
   return (
     <Recording
       word={words[wordIndex]}
+      wordIndex={wordIndex}
+      userId={3}
       recordings={recordings}
       setRecordings={setRecordings}
-      onFinish={() => {
-        console.log("ПЕРЕХОД НА ANALYSIS");
-        setScreen("analysis");
-      }}
+      onFinish={() => setScreen("analysis")}
     />
   );
 }
