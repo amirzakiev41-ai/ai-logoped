@@ -13,7 +13,7 @@ class Settings:
         ]
         self.WORDS_NUM: int = len(self.words)
     
-        self.MODEL: str = "small"
+        self.MODEL: str = "base"
         
         self.OUTPUT_PATH: str = "result.TextGrid"
 
@@ -30,4 +30,4 @@ class Settings:
                
         self.COMPLETE_SCORE: int = 100
         self.ENOUGH_SCORE: int = 50
-        self.MAX_ATTEMPTS: int = 3
+        self.MAX_ATTEMPTS: int = 1

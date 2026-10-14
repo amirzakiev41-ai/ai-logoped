@@ -1,8 +1,15 @@
+
 from pathlib import Path
 import re
+import time
 import whisper
 
-from core.exceptions import SpeechRecognitionError, WhisperModelError, AudioFileNotFoundError, WordSaveError
+from core.exceptions import (
+    SpeechRecognitionError,
+    WhisperModelError,
+    AudioFileNotFoundError,
+    WordSaveError,
+)
 
 
 class SpeechService:
@@ -11,18 +18,26 @@ class SpeechService:
         try:
             self.model = whisper.load_model(self.settings.MODEL)
         except Exception as e:
-            raise WhisperModelError(f"Не удалось загрузить модель Whisper '{self.settings.MODEL}'.") from e
+            raise WhisperModelError(
+                f"Не удалось загрузить модель Whisper '{self.settings.MODEL}'."
+            ) from e
 
     def audio_to_text(self, audiofile_path: str | Path) -> str:
+        start = time.perf_counter()
+
         try:
             transcribe = self.model.transcribe(
                 str(audiofile_path),
                 language="ru",
-                task="transcribe"
+                task="transcribe",
             )
 
             text = transcribe["text"].lower().strip()
             text = re.sub(r"[^\w\s]", "", text)
+
+            elapsed = time.perf_counter() - start
+            print(f"Время Whisper: {elapsed:.2f} сек.")
+            print(f"Распознанный текст: {text}")
 
             return text
 
@@ -30,7 +45,9 @@ class SpeechService:
             raise AudioFileNotFoundError("Аудиофайл не найден.") from e
 
         except Exception as e:
-            raise SpeechRecognitionError(f"Ошибка распознавания речи: {e}") from e
+            raise SpeechRecognitionError(
+                f"Ошибка распознавания речи: {e}"
+            ) from e
 
     def word_to_file(self, word: str) -> None:
         try:

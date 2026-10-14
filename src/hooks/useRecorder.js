@@ -18,6 +18,8 @@ export function useRecorder({
 
     async function startRecording() {
       try {
+        console.log("Начинаем запись:", word);
+
         stream = await navigator.mediaDevices.getUserMedia({
           audio: true,
         });
@@ -36,15 +38,29 @@ export function useRecorder({
         };
 
         mediaRecorder.onstop = async () => {
-          try {
-            const blob = new Blob(chunks, {
-              type: mediaRecorder.mimeType || "audio/webm",
-            });
+          const blob = new Blob(chunks, {
+            type: mediaRecorder.mimeType || "audio/webm",
+          });
 
+          console.log("Запись завершена");
+          console.log("Формат аудио:", blob.type);
+          console.log("Размер аудио:", blob.size, "байт");
+
+          if (blob.size === 0) {
+            console.error("Запись пустая");
+            alert("Не удалось записать звук. Попробуй ещё раз.");
+            stream?.getTracks().forEach((track) => track.stop());
+            return;
+          }
+
+          try {
             const formData = new FormData();
             formData.append("user_id", String(userId));
             formData.append("word_index", String(wordIndex));
             formData.append("audio", blob, "recording.webm");
+
+            console.log("Отправляем аудио на backend...");
+            const requestStart = performance.now();
 
             const response = await fetch(
               "http://127.0.0.1:8000/lesson/check",
@@ -54,15 +70,25 @@ export function useRecorder({
               }
             );
 
+            const responseTime =
+              (performance.now() - requestStart) / 1000;
+
+            console.log(
+              `Время ответа backend: ${responseTime.toFixed(2)} сек.`
+            );
+
+            const responseText = await response.text();
+
+            console.log("HTTP статус:", response.status);
+            console.log("Ответ backend:", responseText);
+
             if (!response.ok) {
               throw new Error(
-                `Backend вернул ошибку ${response.status}: ${await response.text()}`
+                `Backend вернул ошибку ${response.status}: ${responseText}`
               );
             }
 
-            const result = await response.json();
-
-            console.log("Ответ backend:", result);
+            const result = JSON.parse(responseText);
 
             setRecordings((prev) => [
               ...prev,
@@ -78,13 +104,15 @@ export function useRecorder({
             }
           } catch (error) {
             console.error("Ошибка отправки или анализа аудио:", error);
+
             if (!cancelled) {
-              alert("Не удалось проанализировать речь. Подробности — в консоли.");
+              alert(
+                "Не удалось проанализировать речь. " +
+                  "Открой консоль браузера и терминал backend."
+              );
             }
           } finally {
-            if (stream) {
-              stream.getTracks().forEach((track) => track.stop());
-            }
+            stream?.getTracks().forEach((track) => track.stop());
           }
         };
 
@@ -102,9 +130,7 @@ export function useRecorder({
           alert("Не удалось начать запись: " + error.message);
         }
 
-        if (stream) {
-          stream.getTracks().forEach((track) => track.stop());
-        }
+        stream?.getTracks().forEach((track) => track.stop());
       }
     }
 
@@ -116,9 +142,16 @@ export function useRecorder({
 
       if (mediaRecorder?.state === "recording") {
         mediaRecorder.stop();
-      } else if (stream) {
-        stream.getTracks().forEach((track) => track.stop());
+      } else {
+        stream?.getTracks().forEach((track) => track.stop());
       }
     };
-  }, [word, wordIndex, userId, setRecordings, onFinish]);
+  }, [
+    word,
+    wordIndex,
+    userId,
+    setRecordings,
+    onFinish,
+  ]);
 }
+
