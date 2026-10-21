@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import Welcome from "./pages/Welcome";
 import TestIntro from "./pages/TestIntro";
 import WordTest from "./pages/WordTest";
@@ -17,7 +17,10 @@ function App() {
   recordings,
   setRecordings,
 } = useApp();
-  if (screen === "welcome") {
+ const finishRecording = useCallback(() => {
+  setScreen("analysis");
+}, []);  
+if (screen === "welcome") {
     return (
       <Welcome
         onStart={() => setScreen("testIntro")}
@@ -52,7 +55,7 @@ function App() {
       userId={3}
       recordings={recordings}
       setRecordings={setRecordings}
-      onFinish={() => setScreen("analysis")}
+      onFinish={finishRecording}
     />
   );
 }
@@ -75,6 +78,11 @@ if (screen === "result") {
   return (
     <Result
       recordings={recordings}
+      onRestart={() => {
+        setRecordings([]);
+        setWordIndex(0);
+        setScreen("testIntro");
+      }}
     />
   );
 }
